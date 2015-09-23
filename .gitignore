@@ -1,0 +1,5 @@
+*
+!.gitignore
+!zone_api.php
+!README.md
+!example.*
