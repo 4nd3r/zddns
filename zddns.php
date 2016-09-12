@@ -25,6 +25,8 @@ function zone_api( $command, $query = array(), $post = false )
 if ( ZDDNS_SECRET != $_SERVER[ 'QUERY_STRING' ] )
 	exit( 'secret?' );
 
+touch( ZDDNS_SAVE );
+
 if ( ZDDNS_ADDR == @file_get_contents( ZDDNS_SAVE ) )
 	exit( 'not needed' );
 
