@@ -4,6 +4,7 @@
 
 [DataZone RESTful API](https://help.zone.eu/index.php?/Knowledgebase/Article/View/220/0/datazone-restful-api)
 
+## Linux & sõbrad
 ```
 wget --spider https://example.com/super-secret/zddns.php?secret1
 ```
