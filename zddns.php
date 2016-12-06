@@ -12,7 +12,7 @@ foreach ( $zddns as $secret => $record )
     }
 }
 
-if ( ! defined( 'ZDDNS_DOMAIN' ) and ! defined( 'ZDDNS_PREFIX' ) )
+if ( ! defined( 'ZDDNS_DOMAIN' ) or ! defined( 'ZDDNS_PREFIX' ) )
     exit( '?' );
 
 define( 'ZDDNS_HOST', sprintf( '%s.%s', ZDDNS_PREFIX, ZDDNS_DOMAIN ) );
