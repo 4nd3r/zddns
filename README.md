@@ -17,7 +17,6 @@ Flags: I - invalid
      source=/tool fetch url="https://example.com/super-secret/zddns.php?secret1" keep-result=no 
 [admin@MikroTik] > system scheduler print 
 Flags: X - disabled 
- #   NAME                              START-DATE  START-TIME                            INTERVAL             ON-EVENT                             RUN-COUNT
- 0   zddns                                         startup                               45m                  zddns                                      222
-
+ #   NAME   START-DATE  START-TIME  INTERVAL  ON-EVENT  RUN-COUNT
+ 0   zddns              startup     45m       zddns           222
 ```
