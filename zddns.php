@@ -1,12 +1,22 @@
 <?php
 
-define( 'ZDDNS_TOKEN',  'user:S3cur3ToKeN' );
-define( 'ZDDNS_SECRET', 's3cr3t' );
-define( 'ZDDNS_DOMAIN', 'example.com' );
-define( 'ZDDNS_PREFIX', 'test' );
+require 'config.php';
+
+foreach ( $zddns as $secret => $record )
+{
+    if ( $_SERVER[ 'QUERY_STRING' ] === $secret )
+    {
+        define( 'ZDDNS_DOMAIN', $record[ 0 ] );
+        define( 'ZDDNS_PREFIX', $record[ 1 ] );
+        break;
+    }
+}
+
+if ( ! defined( 'ZDDNS_DOMAIN' ) and ! defined( 'ZDDNS_PREFIX' ) )
+    exit( '?' );
 
 define( 'ZDDNS_HOST', sprintf( '%s.%s', ZDDNS_PREFIX, ZDDNS_DOMAIN ) );
-define( 'ZDDNS_SAVE', sprintf( 'zddns.%s', hash( 'sha256', ZDDNS_TOKEN ) ) );
+define( 'ZDDNS_SAVE', sprintf( 'zddns.%s', hash( 'sha256', ZDDNS_TOKEN . ZDDNS_DOMAIN . ZDDNS_PREFIX ) ) );
 define( 'ZDDNS_ADDR', $_SERVER[ 'REMOTE_ADDR' ] );
 
 function zone_api( $command, $query = array(), $post = false )
@@ -21,9 +31,6 @@ function zone_api( $command, $query = array(), $post = false )
     curl_close( $curl );
     return json_decode( $response );
 }
-
-if ( ZDDNS_SECRET != $_SERVER[ 'QUERY_STRING' ] )
-    exit( 'secret?' );
 
 touch( ZDDNS_SAVE );
 

@@ -1,0 +1,9 @@
+<?php
+
+define( 'ZDDNS_TOKEN', 'user:token' );
+
+$zddns = array
+(
+    'secret1' => array( 'example.com', 'foo' ),
+    'secret2' => array( 'example.com', 'bar' ),
+);

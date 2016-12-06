@@ -1,0 +1,4 @@
+index.*
+zddns.*
+!zddns.php
+config.php
