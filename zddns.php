@@ -34,7 +34,7 @@ function zone_api( $command, $query = array(), $post = false )
 
 touch( ZDDNS_SAVE );
 
-if ( ZDDNS_ADDR == @file_get_contents( ZDDNS_SAVE ) )
+if ( ZDDNS_ADDR == file_get_contents( ZDDNS_SAVE ) )
     exit( 'not needed' );
 
 $get = zone_api( sprintf( 'domains/%s/records/', ZDDNS_DOMAIN ) );
