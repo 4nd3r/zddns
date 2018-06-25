@@ -1,6 +1,7 @@
 # Zone (Media) Dynamic DNS (k^hhäkk)
 
 [Zone Media](https://www.zone.ee)
+
 [ZoneID API](https://api.zone.eu/v2)
 
 ## Linux & sõbrad
