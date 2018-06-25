@@ -6,7 +6,7 @@
 
 ## Linux & sõbrad
 ```
-wget --spider https://example.com/super-secret/zddns.php?secret1
+wget -4 --spider https://example.com/super-secret/zddns.php?secret1
 ```
 
 ## RouterOS
@@ -14,3 +14,5 @@ wget --spider https://example.com/super-secret/zddns.php?secret1
 [admin@MikroTik] > system script add name=zddns policy=read,test source="/tool fetch url=\"https://example.com/super-secret/zddns.php\?secret1\" keep-result=no"
 [admin@MikroTik] > system scheduler add name=zddns start-time=startup interval=45m policy=read,test on-event=zddns
 ```
+
+Veendu, et _fetch_ käib üle IPv4!
