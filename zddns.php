@@ -1,5 +1,8 @@
 <?php
 
+if ( PHP_MAJOR_VERSION < 7 )
+    exit( 'php7 or newer only' . PHP_EOL );
+
 if ( false === filter_var( $_SERVER[ 'REMOTE_ADDR' ], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) )
     exit( 'ipv4 only' . PHP_EOL );
 
