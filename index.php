@@ -1,3 +1,3 @@
 <?php
 header( 'Content-Type: text/plain' );
-echo $_SERVER[ 'REMOTE_ADDR' ];
+echo $_SERVER[ 'REMOTE_ADDR' ] . PHP_EOL;
