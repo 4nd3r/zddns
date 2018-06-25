@@ -1,71 +1,67 @@
 <?php
 
+if ( false === filter_var( $_SERVER[ 'REMOTE_ADDR' ], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) )
+    exit( 'ipv4 only' . PHP_EOL );
+
 require 'config.php';
 
-foreach ( $zddns as $secret => $record )
+if ( isset( SUBDOMAINS[ $_SERVER[ 'QUERY_STRING' ] ] ) )
+    define( 'NAME', sprintf( '%s.%s', SUBDOMAINS[ $_SERVER[ 'QUERY_STRING' ] ], DOMAIN ) );
+else
+    exit( 'unknown key' . PHP_EOL );
+
+function zone_api_v2( $path, $data = null )
 {
-    if ( $_SERVER[ 'QUERY_STRING' ] === $secret )
-    {
-        define( 'ZDDNS_DOMAIN', $record[ 0 ] );
-        define( 'ZDDNS_PREFIX', $record[ 1 ] );
-        break;
-    }
-}
-
-if ( ! defined( 'ZDDNS_DOMAIN' ) or ! defined( 'ZDDNS_PREFIX' ) )
-    exit( '?' );
-
-define( 'ZDDNS_HOST', sprintf( '%s.%s', ZDDNS_PREFIX, ZDDNS_DOMAIN ) );
-define( 'ZDDNS_SAVE', sprintf( 'zddns.%s', hash( 'sha256', ZDDNS_TOKEN . ZDDNS_DOMAIN . ZDDNS_PREFIX ) ) );
-define( 'ZDDNS_ADDR', $_SERVER[ 'REMOTE_ADDR' ] );
-
-function zone_api( $command, $query = array(), $post = false )
-{
-    $headers = array( sprintf( 'X-ZoneID-Token: %s', ZDDNS_TOKEN ), 'X-ResponseType: JSON' );
     $curl = curl_init();
-    curl_setopt( $curl, CURLOPT_URL, sprintf( 'https://api.zone.eu/v1/%s?%s', $command, http_build_query( $query ) ) );
-    curl_setopt( $curl, CURLOPT_POST, $post );
-    curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
+
+    curl_setopt( $curl, CURLOPT_URL, sprintf( 'https://api.zone.eu/v2/%s', $path ) );
+
+    curl_setopt
+    (
+        $curl,
+        CURLOPT_HTTPHEADER,
+        array( sprintf( 'Authorization: Basic %s', AUTH ), 'Content-Type: application/json' )
+    );
+
     curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+
+    if ( ! is_null( $data ) )
+    {
+        curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
+        curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+    }
+
     $response = curl_exec( $curl );
+
     curl_close( $curl );
+
     return json_decode( $response );
 }
 
-touch( ZDDNS_SAVE );
+$zone = zone_api_v2( sprintf( 'dns/%s/a', DOMAIN ) );
 
-if ( ZDDNS_ADDR == file_get_contents( ZDDNS_SAVE ) )
-    exit( 'not needed' );
+if ( empty( $zone ) )
+    exit( 'empty zone' . PHP_EOL );
 
-$get = zone_api( sprintf( 'domains/%s/records/', ZDDNS_DOMAIN ) );
-
-if ( $get->status != 200 )
-    exit;
-
-foreach ( $get->params as $zone )
+foreach ( $zone as $record )
 {
-    if ( $zone->adomain != ZDDNS_DOMAIN )
+    if ( $record->name !== NAME )
         continue;
     
-    if ( ! isset( $zone->A ) )
-        continue;
-    
-    foreach ( $zone->A as $record )
-    {
-        if ( $record->host != ZDDNS_HOST )
-            continue;
+    if ( $record->destination === $_SERVER[ 'REMOTE_ADDR' ] )
+        exit( 'not needed' . PHP_EOL );
 
-        $set = zone_api
-        (
-            sprintf( 'domains/%s/records/%s', ZDDNS_DOMAIN, $record->id ),
-            array( 'prefix' => ZDDNS_PREFIX, 'content' => ZDDNS_ADDR ),
-            true
-        );
+    $update = zone_api_v2
+    (
+        sprintf( 'dns/%s/a/%s', DOMAIN, $record->id ),
+        array( 'name' => NAME, 'destination' => $_SERVER[ 'REMOTE_ADDR' ] )
+    );
 
-        if ( $set->status == 200 )
-        {
-            file_put_contents( ZDDNS_SAVE, ZDDNS_ADDR );
-            echo 'updated';
-        }   
-    }
+    if ( ! isset( $update[ 0 ]->destination ) )
+        exit( 'update failed' . PHP_EOL );
+
+    if ( $update[ 0 ]->destination === $_SERVER[ 'REMOTE_ADDR' ] )
+        exit( 'updated' . PHP_EOL );
+    else
+        exit( 'wtf!?' . PHP_EOL );
 }
