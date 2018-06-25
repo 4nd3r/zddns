@@ -1,4 +1,4 @@
-# Zone (Media) Dynamic DNS (k^hhäkk)
+# Zone (Media) Dynamic DNS (k^hhäkk) v2
 
 [Zone Media](https://www.zone.ee)
 
