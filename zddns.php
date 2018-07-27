@@ -31,7 +31,7 @@ function zone_api_v2( $path, $data = null )
     if ( ! is_null( $data ) )
     {
         curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
-        curl_setopt( $curl, CURLOPT_POSTFIELDS, $data );
+        curl_setopt( $curl, CURLOPT_POSTFIELDS, json_encode( $data ) );
     }
 
     $response = curl_exec( $curl );
